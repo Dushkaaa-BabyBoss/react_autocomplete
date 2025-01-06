@@ -5,12 +5,12 @@ import { Person } from './types/Person';
 
 const Autocomplete: React.FC<{
   people: Person[];
-  debounseDelay?: number;
+  debounceDelay?: number;
   onSelected: (person: Person | null) => void;
-}> = ({ people, debounseDelay = 300, onSelected }) => {
+}> = ({ people, debounceDelay: debounceDelay = 300, onSelected }) => {
   const [inputValue, setInputValue] = useState('');
-  const [filteredPeaople, setFilteredPeaople] = useState<Person[]>([]);
-  const [selectedPersone, setSelectedPersone] = useState<Person | null>(null);
+  const [filteredPeople, setFilteredPeople] = useState<Person[]>([]);
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [lastSearch, setLastSearch] = useState('');
 
@@ -34,18 +34,18 @@ const Autocomplete: React.FC<{
     debounce(() => {
       const searchValue = value.trim().toLowerCase();
 
-      const filterPeaple = people.filter(person =>
+      const filterPeople = people.filter(person =>
         person.name.toLowerCase().includes(searchValue),
       );
 
-      setFilteredPeaople(searchValue ? filterPeaple : people);
+      setFilteredPeople(searchValue ? filterPeople : people);
       setLastSearch(value);
-    }, debounseDelay)();
+    }, debounceDelay)();
   };
 
   const handleSelect = (person: Person) => {
     setInputValue(person.name);
-    setSelectedPersone(person);
+    setSelectedPerson(person);
     setShowDropdown(false);
     onSelected(person);
   };
@@ -54,20 +54,20 @@ const Autocomplete: React.FC<{
     setShowDropdown(true);
 
     if (!inputValue) {
-      setFilteredPeaople(people);
+      setFilteredPeople(people);
     }
   };
 
   const handleClearSelection = () => {
-    setSelectedPersone(null);
+    setSelectedPerson(null);
     onSelected(null);
   };
 
   useEffect(() => {
-    if (selectedPersone && inputValue !== selectedPersone.name) {
+    if (selectedPerson && inputValue !== selectedPerson.name) {
       handleClearSelection();
     }
-  }, [inputValue, selectedPersone]);
+  }, [inputValue, selectedPerson]);
 
   return (
     <div className="autocomplete">
@@ -84,8 +84,8 @@ const Autocomplete: React.FC<{
         <div className="dropdown is-active">
           <div className="dropdown-menu" role="menu">
             <div className="dropdown-content">
-              {filteredPeaople.length > 0 ? (
-                filteredPeaople.map(person => (
+              {filteredPeople.length > 0 ? (
+                filteredPeople.map(person => (
                   <div
                     key={person.slug}
                     className="dropdown-item"
@@ -116,13 +116,13 @@ export const App: React.FC = () => {
         <h1 className="title" data-cy="title">
           {selectedPersone
             ? `${selectedPersone.name} (${selectedPersone.born} - ${selectedPersone.died})`
-            : 'No selected persone'}
+            : 'No selected person'}
         </h1>
 
         <Autocomplete
           people={peopleFromServer}
           onSelected={setSelectedPersone}
-          debounseDelay={300}
+          debounceDelay={300}
         />
       </main>
     </div>
